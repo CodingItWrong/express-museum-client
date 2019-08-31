@@ -1,5 +1,9 @@
 <template>
   <div class="hello">
+    <form @submit.prevent="createRestaurant">
+      <input v-model="newRestaurantName" />
+      <button>Add</button>
+    </form>
     <ul>
       <li v-for="restaurant in restaurants" :key="restaurant.name">
         {{ restaurant.name }}
@@ -13,6 +17,31 @@ import gql from "graphql-tag";
 
 export default {
   name: "RestaurantList",
+  data() {
+    return {
+      newRestaurantName: ""
+    };
+  },
+  methods: {
+    createRestaurant() {
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation($name: String!) {
+              createRestaurant(name: $name) {
+                name
+              }
+            }
+          `,
+          variables: {
+            name: this.newRestaurantName
+          }
+        })
+        .then(() => {
+          this.newRestaurantName = "";
+        });
+    }
+  },
   apollo: {
     restaurants: {
       query: gql`
