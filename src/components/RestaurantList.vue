@@ -1,6 +1,5 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
     <ul>
       <li v-for="restaurant in restaurants" :key="restaurant.name">
         {{ restaurant.name }}
@@ -13,18 +12,27 @@
 import gql from "graphql-tag";
 
 export default {
-  name: "HelloWorld",
-  props: {
-    msg: String
-  },
+  name: "RestaurantList",
   apollo: {
-    restaurants: gql`
-      query {
-        restaurants {
-          name
+    restaurants: {
+      query: gql`
+        query {
+          restaurants {
+            name
+          }
+        }
+      `,
+      subscribeToMore: {
+        document: gql`
+          subscription restaurantAdded {
+            name
+          }
+        `,
+        updateQuery: (previousResult, { subscriptionData }) => {
+          console.log({ previousResult, subscriptionData });
         }
       }
-    `
+    }
   }
 };
 </script>
