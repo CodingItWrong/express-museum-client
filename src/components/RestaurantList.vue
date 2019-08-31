@@ -25,11 +25,17 @@ export default {
       subscribeToMore: {
         document: gql`
           subscription restaurantAdded {
-            name
+            restaurantAdded {
+              name
+            }
           }
         `,
         updateQuery: (previousResult, { subscriptionData }) => {
           console.log({ previousResult, subscriptionData });
+          const newRestaurant = subscriptionData.data.restaurantAdded;
+          return {
+            restaurants: [...previousResult.restaurants, newRestaurant]
+          };
         }
       }
     }
